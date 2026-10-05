@@ -41,7 +41,8 @@ function toast(message, type = 'success') {
   setTimeout(() => item.remove(), 3800);
 }
 
-function renderLogin() {
+function renderLogin(mode = 'login', initialEmail = '') {
+  const registering = mode === 'register';
   appRoot.innerHTML = `
     <main class="login-shell">
       <section class="login-art">
@@ -49,8 +50,8 @@ function renderLogin() {
         <div class="login-message"><span class="eyebrow">มหาวิทยาลัยเทคโนโลยีราชมงคลล้านนา · เชียงใหม่</span><h1>ทุกชีวิต<br>สมควรมี<span>บ้านที่อบอุ่น</span></h1><p>พื้นที่เล็ก ๆ ที่เชื่อมโยงผู้คนและเพื่อนสี่ขา พร้อมระบบคัดกรองที่ใส่ใจในทุกขั้นตอน</p><div class="login-quote"><span>“</span><div><b>เพราะการรับเลี้ยง คือคำสัญญาตลอดชีวิต</b><small>ระบบจัดการศูนย์พักพิงสัตว์ · กลุ่ม 9 อยากกินลาบ</small></div></div></div>
         <div class="login-bottom"><span>เชียงใหม่, ประเทศไทย</span><span>ดูแลด้วยใจ · ตั้งแต่วันแรก</span></div>
       </section>
-      <section class="login-panel"><div class="login-form-wrap"><span class="eyebrow green-text">ยินดีต้อนรับ</span><h2>เข้าสู่บ้านอุ่นใจ</h2><p class="muted">ใช้บัญชีอีเมลมหาวิทยาลัยเพื่อเข้าใช้งาน</p>
-        <form id="login-form" class="form-stack"><label>ชื่อที่ใช้แสดง<input name="name" placeholder="ชื่อ - นามสกุล" autocomplete="name" maxlength="80"></label><label>อีเมลมหาวิทยาลัย<div class="input-icon"><span>✉</span><input name="email" type="email" placeholder="ชื่อผู้ใช้@rmutl.ac.th" autocomplete="email" required></div></label><label>รหัสยืนยัน<div class="input-icon"><span>⌑</span><input name="code" inputmode="numeric" placeholder="รหัส 6 หลัก" required maxlength="6"></div></label><div class="demo-hint"><span>ⓘ</span><span><b>โหมดสาธิต</b> — ใช้รหัส <code>123456</code> · ผู้ดูแลระบบใช้ <code>admin@rmutl.ac.th</code></span></div><button class="button primary full" type="submit">เข้าสู่ระบบ <span>→</span></button><p class="login-terms">การเข้าสู่ระบบแสดงว่าคุณยอมรับเงื่อนไขการใช้บริการและนโยบายความเป็นส่วนตัว</p></form>
+      <section class="login-panel"><div class="login-form-wrap"><span class="eyebrow green-text">${registering ? 'มาเป็นส่วนหนึ่งของบ้านอุ่นใจ' : 'ยินดีต้อนรับ'}</span><h2>${registering ? 'สมัครสมาชิก' : 'เข้าสู่บ้านอุ่นใจ'}</h2><p class="muted">${registering ? 'สร้างบัญชีด้วยอีเมลมหาวิทยาลัย เพื่อเริ่มต้นดูแลเพื่อนสี่ขา' : 'ใช้บัญชีอีเมลมหาวิทยาลัยเพื่อเข้าใช้งาน'}</p>
+        ${registering ? `<form id="register-form" class="form-stack"><label>ชื่อ - นามสกุล<input name="name" placeholder="ชื่อที่ใช้แสดงในระบบ" autocomplete="name" required minlength="2" maxlength="80"></label><label>อีเมลมหาวิทยาลัย<div class="input-icon"><span>✉</span><input name="email" type="email" placeholder="ชื่อผู้ใช้@rmutl.ac.th" autocomplete="email" required pattern="[^@\\s]+@rmutl\\.ac\\.th"></div></label><label>รหัสยืนยัน<div class="input-icon"><span>⌑</span><input name="code" inputmode="numeric" placeholder="รหัส 6 หลัก" required maxlength="6"></div></label><div class="demo-hint"><span>ⓘ</span><span><b>โหมดสาธิต</b> — ใช้รหัส <code>123456</code> · ต้องใช้อีเมล <code>@rmutl.ac.th</code></span></div><label class="check-line"><input type="checkbox" name="consent" required><span>ยินยอมให้ใช้ข้อมูลบัญชีเพื่อการสมัครและติดต่อเกี่ยวกับคำขอรับเลี้ยง</span></label><button class="button primary full" type="submit">สร้างบัญชีสมาชิก <span>→</span></button><p class="login-terms">การสมัครนี้เป็นโหมดสาธิต ยังไม่ได้เชื่อมต่อระบบยืนยันตัวตนจริงของมหาวิทยาลัย</p><p class="auth-switch">มีบัญชีอยู่แล้ว? <button type="button" data-action="switch-auth" data-mode="login">เข้าสู่ระบบ</button></p></form>` : `<form id="login-form" class="form-stack"><label>ชื่อที่ใช้แสดง<input name="name" placeholder="ชื่อ - นามสกุล" autocomplete="name" maxlength="80"></label><label>อีเมลมหาวิทยาลัย<div class="input-icon"><span>✉</span><input name="email" type="email" placeholder="ชื่อผู้ใช้@rmutl.ac.th" autocomplete="email" required value="${esc(initialEmail)}"></div></label><label>รหัสยืนยัน<div class="input-icon"><span>⌑</span><input name="code" inputmode="numeric" placeholder="รหัส 6 หลัก" required maxlength="6"></div></label><div class="demo-hint"><span>ⓘ</span><span><b>โหมดสาธิต</b> — ใช้รหัส <code>123456</code> · ผู้ดูแลระบบใช้ <code>admin@rmutl.ac.th</code></span></div><button class="button primary full" type="submit">เข้าสู่ระบบ <span>→</span></button><p class="login-terms">การเข้าสู่ระบบแสดงว่าคุณยอมรับเงื่อนไขการใช้บริการและนโยบายความเป็นส่วนตัว</p><p class="auth-switch">ยังไม่มีบัญชี? <button type="button" data-action="switch-auth" data-mode="register">สมัครสมาชิก</button></p></form>`}
       </div><div class="login-campus-note">🔒 ข้อมูลของคุณได้รับการดูแลอย่างปลอดภัย</div></section>
     </main>`;
 }
@@ -203,7 +204,12 @@ document.addEventListener('submit', async event => {
   const button = form.querySelector('[type="submit"]');
   if (button) { button.disabled = true; button.dataset.oldText = button.textContent; button.textContent = 'กำลังบันทึก…'; }
   try {
-    if (form.id === 'login-form') {
+    if (form.id === 'register-form') {
+      data.consent = form.elements.consent.checked;
+      await api('/api/auth/register', { method: 'POST', body: JSON.stringify(data) });
+      renderLogin('login', data.email);
+      toast('สมัครสมาชิกสำเร็จ กรุณาเข้าสู่ระบบ');
+    } else if (form.id === 'login-form') {
       await api('/api/auth/login', { method: 'POST', body: JSON.stringify(data) });
       await refresh();
       toast(`ยินดีต้อนรับสู่บ้านอุ่นใจ${data.name ? `, ${data.name}` : ''}`);
@@ -261,6 +267,7 @@ document.addEventListener('click', async event => {
   if (!button) return;
   const { action, id } = button.dataset;
   try {
+    if (action === 'switch-auth') { renderLogin(button.dataset.mode); return; }
     if (action === 'logout') { await api('/api/auth/logout', { method: 'POST' }); Object.assign(state, { user: null, pets: [], applications: [] }); render(); }
     if (action === 'apply') openApplication(id);
     if (action === 'pet-details') { const pet = state.pets.find(item => item.id === id); toast(`${pet.name} · ${pet.health || 'สอบถามทีมงานเพื่อรับข้อมูลเพิ่มเติม'}`); }

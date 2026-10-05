@@ -5,6 +5,7 @@ const crypto = require('crypto');
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
+const WEB_ROOT = path.join(__dirname, 'docs');
 const DATA_FILE = process.env.DATA_FILE || path.join(__dirname, 'data', 'shelter.json');
 const DEMO_LOGIN_CODE = process.env.DEMO_LOGIN_CODE || '123456';
 const sessions = new Map();
@@ -45,7 +46,7 @@ function saveStore() {
 
 app.disable('x-powered-by');
 app.use(express.json({ limit: '7mb' }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(WEB_ROOT));
 
 function getCookie(req, key) {
   const cookies = (req.headers.cookie || '').split(';');
@@ -107,6 +108,32 @@ app.post('/api/auth/login', (req, res) => {
   sessions.set(token, user);
   res.setHeader('Set-Cookie', `shelter_session=${token}; HttpOnly; SameSite=Lax; Path=/; Max-Age=43200${process.env.NODE_ENV === 'production' ? '; Secure' : ''}`);
   res.json({ user: publicUser(user) });
+});
+
+app.post('/api/auth/register', (req, res) => {
+  const ip = req.ip;
+  const attempts = loginAttempts.get(ip) || { count: 0, until: 0 };
+  if (attempts.until > Date.now()) return res.status(429).json({ error: 'ลองสมัครสมาชิกถี่เกินไป โปรดลองอีกครั้งภายหลัง' });
+
+  const email = text(req.body.email, 160).toLowerCase();
+  const name = text(req.body.name, 80);
+  const code = text(req.body.code, 20);
+  if (!/^[^\s@]+@rmutl\.ac\.th$/.test(email)) return res.status(400).json({ error: 'กรุณาใช้อีเมลมหาวิทยาลัย @rmutl.ac.th' });
+  if (email === 'admin@rmutl.ac.th') return res.status(400).json({ error: 'อีเมลนี้สงวนไว้สำหรับบัญชีผู้ดูแลระบบ' });
+  if (name.length < 2) return res.status(400).json({ error: 'กรุณากรอกชื่ออย่างน้อย 2 ตัวอักษร' });
+  if (code !== DEMO_LOGIN_CODE) {
+    attempts.count += 1;
+    if (attempts.count >= 5) { attempts.count = 0; attempts.until = Date.now() + 60_000; }
+    loginAttempts.set(ip, attempts);
+    return res.status(401).json({ error: 'รหัสยืนยันไม่ถูกต้อง' });
+  }
+  if (store.users.some(user => user.email === email)) return res.status(409).json({ error: 'อีเมลนี้สมัครสมาชิกแล้ว กรุณาเข้าสู่ระบบ' });
+
+  const user = { email, name, role: 'user', createdAt: new Date().toISOString() };
+  store.users.push(user);
+  saveStore();
+  loginAttempts.delete(ip);
+  res.status(201).json({ message: 'สมัครสมาชิกเรียบร้อยแล้ว กรุณาเข้าสู่ระบบ', user: publicUser(user) });
 });
 
 app.post('/api/auth/logout', (req, res) => {
@@ -243,7 +270,7 @@ app.post('/api/follow-ups', requireAuth, (req, res) => {
 });
 
 app.use('/api', (req, res) => res.status(404).json({ error: 'ไม่พบ API ที่ร้องขอ' }));
-app.get(/.*/, (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
+app.get(/.*/, (req, res) => res.sendFile(path.join(WEB_ROOT, 'index.html')));
 app.use((error, req, res, next) => {
   console.error(error);
   if (error instanceof SyntaxError && error.status === 400) return res.status(400).json({ error: 'ข้อมูล JSON ไม่ถูกต้อง' });

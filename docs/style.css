@@ -63,9 +63,10 @@
 .campus-pill,.top-campus,.login-message .eyebrow,.dashboard-hero .eyebrow{font-size:16px;letter-spacing:.03em}
 .campus-pill{line-height:1.5}
 
-/* กำหนด 16px เป็นขนาดพื้นฐานขั้นต่ำของข้อความทุกส่วนในแอป */
+/* กำหนดขนาด 16px เป็นค่าต่ำสุดของข้อความทุกส่วนในแอป */
 body *{font-size:16px!important}
 .login-message h1{font-size:clamp(44px,5vw,68px)!important}
+.login-message h1 span{font-size:clamp(52px,6vw,80px)!important}
 .login-form-wrap h2{font-size:36px!important}
 .page-heading h1{font-size:32px!important}
 .welcome-copy h2{font-size:30px!important}
@@ -82,3 +83,5 @@ body *{font-size:16px!important}
 .footer{flex-wrap:wrap;gap:8px 20px}
 @media(max-width:800px){.page-heading h1{font-size:28px!important}.section-heading h2,.appointment-banner h2,.dashboard-hero h2{font-size:23px!important}.welcome-copy h2{font-size:26px!important}.panel-title h3,.pet-title-row h3,.modal-header h2{font-size:20px!important}}
 @media(max-width:540px){.page-heading h1{font-size:25px!important}.section-heading h2,.appointment-banner h2,.dashboard-hero h2{font-size:21px!important}.welcome-copy h2{font-size:23px!important}.panel-title h3,.pet-title-row h3,.modal-header h2{font-size:18px!important}.login-form-wrap h2{font-size:30px!important}}
+.auth-switch{text-align:center;color:#718176;margin:0;font-size:16px}
+.auth-switch button{border:0;background:none;padding:0;color:#356c4b;font-weight:700;text-decoration:underline;text-underline-offset:3px}
